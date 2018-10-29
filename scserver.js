@@ -898,16 +898,18 @@ SCServer.prototype.verifyOutboundEvent = function (socket, eventName, eventData,
   var callbackInvoked = false;
 
   if (eventName === '#publish') {
+    var requestData = JSON.parse(JSON.stringify(eventData.data));
     var request = {
       socket: socket,
       channel: eventData.channel,
-      data: eventData.data
+      data: requestData
     };
     async.applyEachSeries(this._middleware[this.MIDDLEWARE_PUBLISH_OUT], request,
       function (err) {
         if (callbackInvoked) {
           self.emit('warning', new InvalidActionError('Callback for ' + self.MIDDLEWARE_PUBLISH_OUT + ' middleware was already invoked'));
         } else {
+          var publishData = {'channel' : eventData.channel, 'data': request.data};
           callbackInvoked = true;
           if (request.data !== undefined) {
             eventData.data = request.data;
@@ -918,12 +920,12 @@ SCServer.prototype.verifyOutboundEvent = function (socket, eventName, eventData,
             } else if (self.middlewareEmitWarnings) {
               self.emit('warning', err);
             }
-            cb(err, eventData);
+            cb(err, publishData);
           } else {
             if (options && request.useCache) {
               options.useCache = true;
             }
-            cb(null, eventData);
+            cb(null, publishData);
           }
         }
       }
