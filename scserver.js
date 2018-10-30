@@ -898,11 +898,10 @@ SCServer.prototype.verifyOutboundEvent = function (socket, eventName, eventData,
   var callbackInvoked = false;
 
   if (eventName === '#publish') {
-    var requestData = JSON.parse(JSON.stringify(eventData.data));
     var request = {
       socket: socket,
       channel: eventData.channel,
-      data: requestData
+      data: eventData.data
     };
     async.applyEachSeries(this._middleware[this.MIDDLEWARE_PUBLISH_OUT], request,
       function (err) {
