@@ -908,22 +908,20 @@ SCServer.prototype.verifyOutboundEvent = function (socket, eventName, eventData,
         if (callbackInvoked) {
           self.emit('warning', new InvalidActionError('Callback for ' + self.MIDDLEWARE_PUBLISH_OUT + ' middleware was already invoked'));
         } else {
+          var publishData = {'channel' : eventData.channel, 'data': request.data};
           callbackInvoked = true;
-          if (request.data !== undefined) {
-            eventData.data = request.data;
-          }
           if (err) {
             if (err === true || err.silent) {
               err = new SilentMiddlewareBlockedError('Action was silently blocked by ' + self.MIDDLEWARE_PUBLISH_OUT + ' middleware', self.MIDDLEWARE_PUBLISH_OUT);
             } else if (self.middlewareEmitWarnings) {
               self.emit('warning', err);
             }
-            cb(err, eventData);
+            cb(err, publishData);
           } else {
             if (options && request.useCache) {
               options.useCache = true;
             }
-            cb(null, eventData);
+            cb(null, publishData);
           }
         }
       }
