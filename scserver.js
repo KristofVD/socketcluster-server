@@ -911,9 +911,6 @@ SCServer.prototype.verifyOutboundEvent = function (socket, eventName, eventData,
         } else {
           var publishData = {'channel' : eventData.channel, 'data': request.data};
           callbackInvoked = true;
-          if (request.data !== undefined) {
-            eventData.data = request.data;
-          }
           if (err) {
             if (err === true || err.silent) {
               err = new SilentMiddlewareBlockedError('Action was silently blocked by ' + self.MIDDLEWARE_PUBLISH_OUT + ' middleware', self.MIDDLEWARE_PUBLISH_OUT);
